@@ -63,3 +63,103 @@ const galleryItems = [
     description: 'Lighthouse Coast Sea',
   },
 ];
+
+const galleryContainer = document.querySelector('.js-gallery');
+const cardsMarkup = createCardsMarkup(galleryItems);
+
+galleryContainer.insertAdjacentHTML('beforeend', cardsMarkup);
+
+let currentItem = '';
+
+function createCardsMarkup(cards) {
+  return cards.map(({ preview, original, description }) => {
+    return `<li class="gallery__item">
+  <a
+    class="gallery__link"
+    href="${original}"
+  >
+    <img
+      class="gallery__image"
+      src="${preview}"
+      data-source="${original}"
+      alt="${description}"
+    />
+  </a>
+</li>`
+  }).join("");
+};
+
+const modalWindow = document.querySelector('.js-lightbox');
+const overlayEl = document.querySelector('.lightbox__overlay');
+const closeButton = document.querySelector('.lightbox__button');
+const originalPicture = document.querySelector('.lightbox__image');
+
+
+galleryContainer.addEventListener('click', onGalleryContainerClick);
+
+
+function onGalleryContainerClick(evt) {
+  evt.preventDefault();
+
+  if (evt.target.nodeName !== 'IMG') {
+    return;
+  };
+
+  openModalWindow(evt.target);
+};
+
+function openModalWindow(img) {
+  modalWindow.classList.add('is-open');
+
+  currentItem = img.closest('.gallery__item');  
+  
+  renderPicture(img.dataset.source, img.alt);
+
+  window.addEventListener('keydown', onArrowsPress);
+
+  window.addEventListener('keydown', onEscPress);
+  overlayEl.addEventListener('click', closeModalWindow);
+  closeButton.addEventListener('click', closeModalWindow);
+};
+
+function renderPicture(url, description) {
+  originalPicture.src = url;
+  originalPicture.alt = description;
+};
+
+function onArrowsPress(key) {
+  if (key.code === 'ArrowRight') {
+    currentItem = currentItem.nextElementSibling;
+  };
+
+  if (key.code === 'ArrowLeft') {
+    currentItem = currentItem.previousElementSibling;
+  };
+
+  if (currentItem) {
+    const url = currentItem.querySelector('.gallery__image').dataset.source;
+    const alt = currentItem.querySelector('.gallery__image').alt;
+
+    renderPicture(url, alt);
+  } else {
+    closeModalWindow();
+  };
+};
+
+function onEscPress(key) {
+  if (key.code === 'Escape') {
+      closeModalWindow()
+    };
+};
+
+function closeModalWindow() {
+  modalWindow.classList.remove('is-open');
+  
+  renderPicture("", "");
+
+  window.removeEventListener('keydown', onArrowsPress);
+
+  window.removeEventListener('keydown', onEscPress);
+  overlayEl.removeEventListener('click', closeModalWindow);
+  closeButton.removeEventListener('click', closeModalWindow);
+};
