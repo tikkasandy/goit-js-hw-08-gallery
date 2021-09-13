@@ -69,8 +69,6 @@ const cardsMarkup = createCardsMarkup(galleryItems);
 
 galleryContainer.insertAdjacentHTML('beforeend', cardsMarkup);
 
-let currentItem = '';
-
 function createCardsMarkup(cards) {
   return cards.map(({ preview, original, description }) => {
     return `<li class="gallery__item">
@@ -94,9 +92,9 @@ const overlayEl = document.querySelector('.lightbox__overlay');
 const closeButton = document.querySelector('.lightbox__button');
 const originalPicture = document.querySelector('.lightbox__image');
 
-
 galleryContainer.addEventListener('click', onGalleryContainerClick);
 
+let currentItem = '';
 
 function onGalleryContainerClick(evt) {
   evt.preventDefault();
@@ -154,6 +152,8 @@ function onEscPress(key) {
 
 function closeModalWindow() {
   modalWindow.classList.remove('is-open');
+
+  currentItem = '';
   
   renderPicture("", "");
 
